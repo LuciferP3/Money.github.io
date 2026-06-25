@@ -13,7 +13,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      touch-action: manipulation; /* Prevents accidental double-tap zooming */
+      touch-action: manipulation;
     }
 
     h1 {
@@ -53,6 +53,13 @@
       box-sizing: border-box;
     }
 
+    /* CRITICAL FIX FOR MOBILE DROP: 
+       This forces the touch detector to see the entire card container 
+       instead of getting blocked by individual texts or emojis */
+    .item-card * {
+      pointer-events: none;
+    }
+
     .item-emoji {
       font-size: 3rem;
       margin: 5px 0;
@@ -84,13 +91,12 @@
       font-size: 0.85rem;
       color: #57606f;
       margin-top: 10px;
-      pointer-events: none; /* Crucial for mobile elementFromPoint detection */
     }
 
-    /* Highlight effect when item is hovered over on drag */
+    /* Highlight effect when hovered/dragged over */
     .item-card.hovered {
-      background-color: #dfe4ea;
-      border-color: #2ed573;
+      background-color: #dfe4ea !important;
+      border-color: #2ed573 !important;
     }
 
     /* Wallet / Selection Box */
@@ -127,13 +133,13 @@
       cursor: grab;
       user-select: none;
       box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
-      touch-action: none; /* Prevents the viewport from scrolling while dragging money */
+      touch-action: none; 
       position: relative;
-      z-index: 10;
+      z-index: 999; /* Keeps the dragging item visually on top */
     }
 
-    .money-element:active {
-      cursor: grabbing;
+    .money-element img {
+      pointer-events: none; /* Stops internal images from messing up drag targets */
     }
 
     .img-note {
@@ -162,7 +168,6 @@
     .error { color: #ff4757; }
     .info { color: #3742fa; }
 
-    /* Small Screen tweaks */
     @media (max-width: 360px) {
       .item-card { width: 125px; padding: 10px; }
       .img-note { height: 55px; }
@@ -285,7 +290,7 @@
         const touch = e.touches[0];
         startX = touch.clientX;
         startY = touch.clientY;
-        money.style.transition = 'none'; // Instant movement response
+        money.style.transition = 'none'; 
       }, { passive: true });
 
       money.addEventListener('touchmove', (e) => {
@@ -293,14 +298,14 @@
         const moveX = touch.clientX - startX;
         const moveY = touch.clientY - startY;
 
-        // Visual translation of note/coin tracking the finger position
         money.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
 
-        // Identify the element directly under the user's touch target area
+        // Identify element directly beneath finger touch coordinate
         const elementUnderFinger = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        // Safely trace up to look for the card element container
         const cardFound = elementUnderFinger ? elementUnderFinger.closest('.item-card') : null;
 
-        // Manage active mobile styling
         itemCards.forEach(c => c.classList.remove('hovered'));
         if (cardFound && !cardFound.style.opacity) {
           cardFound.classList.add('hovered');
@@ -311,8 +316,7 @@
       }, { passive: true });
 
       money.addEventListener('touchend', (e) => {
-        // Reset element position cleanly back into wallet
-        money.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        money.style.transition = 'transform 0.2s ease-out';
         money.style.transform = 'none';
 
         if (targetCardMobile) {
@@ -326,6 +330,7 @@
 
     // --- 3. UNIFIED PAYMENT LOGIC ---
     function calculateTotal(card, amountPaid) {
+      // Find the inner drop-zone explicitly inside the passed card object
       const zone = card.querySelector('.drop-zone');
       const itemPrice = parseInt(card.dataset.price);
       let currentTotal = parseInt(zone.dataset.currentTotal);
