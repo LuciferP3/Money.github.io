@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LKR මුදල් හඳුනාගනිමු</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    p.instructions {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+
+    /* Shop Area */
+    .shop-container {
+      display: flex;
+      gap: 25px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .item-card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 20px;
+      width: 160px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+
+    .item-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .item-emoji {
+      font-size: 4rem;
+      margin: 10px 0;
+    }
+
+    .item-name {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #444;
+    }
+
+    .price-tag {
+      display: inline-block;
+      background-color: #ff4757;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .drop-zone {
+      border: 2px dashed #3742fa;
+      background-color: #f1f2f6;
+      border-radius: 8px;
+      padding: 15px 5px;
+      min-height: 40px;
+      font-size: 0.9rem;
+      color: #57606f;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .drop-zone.hovered {
+      background-color: #dfe4ea;
+      border-color: #2ed573;
+    }
+
+    /* Wallet / Selection Box */
+    .wallet-container {
+      background: #f8f9fa;
+      border: 3px solid #2ed573;
+      border-radius: 15px;
+      padding: 25px;
+      width: 100%;
+      max-width: 900px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .wallet-title {
+      font-size: 1.4rem;
+      color: #2ed573;
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .coins-pool {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Currency Styling with Images */
+    .money-element {
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.1s;
+      box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .money-element:active {
+      cursor: grabbing;
+      transform: scale(0.95);
+    }
+
+    /* Adjusting dimensions to fit images well */
+    .img-note {
+      height: 75px;
+      border-radius: 4px;
+      display: block;
+    }
+
+    .img-coin {
+      border-radius: 50%;
+      display: block;
+    }
+    
+    .coin-10 img { width: 65px; height: 65px; }
+    .coin-5 img { width: 58px; height: 58px; }
+
+    /* Status Text */
+    #feedback {
+      margin-top: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      min-height: 30px;
+      text-align: center;
+    }
+    .success { color: #2ed573; }
+    .error { color: #ff4757; }
+    .info { color: #3742fa; }
+  </style>
+</head>
+<body>
+
+  <h1>හිතමිතුරු වෙළඳසැල 🛍️</h1>
+  <p class="instructions">ඔබේ පසුම්බියෙන් සල්ලි හෝ කාසි වලින්  භාණ්ඩය මිලදී ගන්න!</p>
+
+  <!-- Shop Items Area -->
+  <div class="shop-container">
+    <div class="item-card" data-price="15">
+      <div class="item-emoji">✏️</div>
+      <div class="item-name">පැන්සල</div>
+      <div class="price-tag">රු 15</div>
+      <div class="drop-zone" data-current-total="0">මුදල් මෙතනට දමන්න</div>
+    </div>
+
+    <div class="item-card" data-price="35">
+      <div class="item-emoji">🍎</div>
+      <div class="item-name">ඇපල් ගෙඩිය</div>
+      <div class="price-tag">රු 35</div>
+      <div class="drop-zone" data-current-total="0">මුදල් මෙතනට දමන්න</div>
+    </div>
+
+    <div class="item-card" data-price="70">
+      <div class="item-emoji">🍦</div>
+      <div class="item-name">අයිස්ක්‍රීම්</div>
+      <div class="price-tag">රු 70</div>
+      <div class="drop-zone" data-current-total="0">මුදල් මෙතනට දමන්න</div>
+    </div>
+
+    <div class="item-card" data-price="120">
+      <div class="item-emoji">🧸</div>
+      <div class="item-name">ටෙඩී බෙයාර්</div>
+      <div class="price-tag">රු 120</div>
+      <div class="drop-zone" data-current-total="0">මුදල් මෙතනට දමන්න</div>
+    </div>
+
+    <div class="item-card" data-price="150">
+      <div class="item-emoji">🎨</div>
+      <div class="item-name">පාට පෙට්ටිය</div>
+      <div class="price-tag">රු 150</div>
+      <div class="drop-zone" data-current-total="0">මුදල් මෙතනට දමන්න</div>
+    </div>
+  </div>
+
+  <!-- Wallet / Selection Box -->
+  <div class="wallet-container">
+    <div class="wallet-title">පසුම්බිය 💰</div>
+    <div class="coins-pool">
+      
+      <!-- 100 Note -->
+      <div class="money-element" draggable="true" data-value="100">
+        <img class="img-note" src="100.jpg" alt="රු 100">
+      </div>
+      
+      <!-- 50 Note -->
+      <div class="money-element" draggable="true" data-value="50">
+        <img class="img-note" src="50.jpg" alt="රු 50">
+      </div>
+      
+      <!-- 20 Note -->
+      <div class="money-element" draggable="true" data-value="20">
+        <img class="img-note" src="20.jpg" alt="රු 20">
+      </div>
+      
+      <!-- 10 Coin -->
+      <div class="money-element coin-10" draggable="true" data-value="10">
+        <img class="img-coin" src="10.png" alt="රු 10">
+      </div>
+      
+      <!-- 5 Coin -->
+      <div class="money-element coin-5" draggable="true" data-value="5">
+        <img class="img-coin" src="5.png" alt="රු 5">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Feedback Messaging System -->
+  <div id="feedback"></div>
+
+  <script>
+    const moneyElements = document.querySelectorAll('.money-element');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    const feedback = document.getElementById('feedback');
+
+    let draggedValue = 0;
+
+    // 1. Handle Drag Events on Money
+    moneyElements.forEach(money => {
+      money.addEventListener('dragstart', (e) => {
+        draggedValue = parseInt(e.currentTarget.dataset.value);
+      });
+    });
+
+    // 2. Handle Drag & Drop on Item Zones
+    dropZones.forEach(zone => {
+      zone.addEventListener('dragover', (e) => {
+        e.preventDefault(); 
+        zone.classList.add('hovered');
+      });
+
+      zone.addEventListener('dragleave', () => {
+        zone.classList.remove('hovered');
+      });
+
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.classList.remove('hovered');
+
+        const parentCard = zone.parentElement;
+        const itemPrice = parseInt(parentCard.dataset.price);
+        let currentTotal = parseInt(zone.dataset.currentTotal);
+
+        currentTotal += draggedValue;
+        zone.dataset.currentTotal = currentTotal;
+
+        if (currentTotal === itemPrice) {
+          showFeedback(`🎉 හරි! ඔබ ${parentCard.querySelector('.item-name').innerText} මිලදී ගත්තා!`, 'success');
+          
+          parentCard.style.opacity = '0.4';
+          zone.innerText = "මිලදී ගත්තා ✅";
+          zone.style.pointerEvents = 'none'; 
+        } 
+        else if (currentTotal > itemPrice) {
+          showFeedback(`⚠️ අපොයි! මුදල් වැඩියි (රු ${currentTotal}). හරියට ගාණ බලන්න.`, 'error');
+          zone.dataset.currentTotal = 0;
+          zone.innerText = "මුදල් මෙතනට දමන්න";
+        } 
+        else {
+          showFeedback(`👍 රු ${draggedValue}ක් එකතු කළා. දැනට එකතුව: රු ${currentTotal} / ${itemPrice}. තව දමන්න!`, 'info');
+          zone.innerText = `ගෙවා ඇත: රු ${currentTotal}`;
+        }
+      });
+    });
+
+    function showFeedback(message, className) {
+      feedback.innerText = message;
+      feedback.className = className;
+    }
+  </script>
+</body>
+</html>
