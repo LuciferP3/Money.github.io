@@ -5,38 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>LKR මුදල් හඳුනාගනිමු</title>
   <style>
+    html, body {
+      height: 100%;
+    }
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f0f8ff;
       margin: 0;
-      padding: 15px;
+      padding: clamp(6px, 2vh, 15px);
       display: flex;
       flex-direction: column;
       align-items: center;
-      touch-action: manipulation;
+      justify-content: space-evenly;
+      touch-action: manipulation; /* Prevents accidental double-tap zooming */
+      height: 100vh;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     h1 {
       color: #333;
-      margin-bottom: 5px;
-      font-size: 1.8rem;
+      margin: 0;
+      font-size: clamp(1rem, 4.5vh, 1.8rem);
       text-align: center;
     }
 
     p.instructions {
       color: #666;
-      font-size: 1rem;
-      margin-bottom: 25px;
+      font-size: clamp(0.65rem, 2vh, 1rem);
+      margin: 2px 0 0;
       text-align: center;
     }
 
     /* Shop Area */
     .shop-container {
       display: flex;
-      gap: 15px;
+      gap: clamp(4px, 1.5vw, 15px);
       justify-content: center;
       flex-wrap: wrap;
-      margin-bottom: 35px;
       width: 100%;
       max-width: 1000px;
     }
@@ -45,58 +54,56 @@
       background: white;
       border: 2px solid #e0e0e0;
       border-radius: 12px;
-      padding: 15px;
-      width: 140px;
+      padding: clamp(4px, 1.2vh, 15px) clamp(4px, 1vw, 15px);
+      width: clamp(80px, 17vw, 140px);
       text-align: center;
       box-shadow: 0 4px 6px rgba(0,0,0,0.05);
       transition: transform 0.2s, background-color 0.2s;
       box-sizing: border-box;
     }
 
-    /* CRITICAL FIX FOR MOBILE DROP: 
-       This forces the touch detector to see the entire card container 
-       instead of getting blocked by individual texts or emojis */
-    .item-card * {
-      pointer-events: none;
-    }
-
     .item-emoji {
-      font-size: 3rem;
-      margin: 5px 0;
+      font-size: clamp(1.4rem, 5vh, 3rem);
+      margin: 2px 0;
     }
 
     .item-name {
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: clamp(0.65rem, 2vh, 1.1rem);
       color: #444;
+      white-space: nowrap;
     }
 
     .price-tag {
       display: inline-block;
       background-color: #ff4757;
       color: white;
-      padding: 4px 10px;
+      padding: 2px 8px;
       border-radius: 20px;
       font-weight: bold;
-      margin: 8px 0;
-      font-size: 0.9rem;
+      margin: 4px 0;
+      font-size: clamp(0.6rem, 1.8vh, 0.9rem);
     }
 
     .drop-zone {
       border: 2px dashed #3742fa;
       background-color: #f1f2f6;
       border-radius: 8px;
-      padding: 12px 5px;
-      min-height: 40px;
-      font-size: 0.85rem;
+      padding: clamp(4px, 1vh, 12px) 5px;
+      min-height: clamp(20px, 4vh, 40px);
+      font-size: clamp(0.55rem, 1.6vh, 0.85rem);
       color: #57606f;
-      margin-top: 10px;
+      margin-top: clamp(4px, 1vh, 10px);
+      pointer-events: none; /* Crucial for mobile elementFromPoint detection */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Highlight effect when hovered/dragged over */
+    /* Highlight effect when item is hovered over on drag */
     .item-card.hovered {
-      background-color: #dfe4ea !important;
-      border-color: #2ed573 !important;
+      background-color: #dfe4ea;
+      border-color: #2ed573;
     }
 
     /* Wallet / Selection Box */
@@ -104,7 +111,7 @@
       background: #f8f9fa;
       border: 3px solid #2ed573;
       border-radius: 15px;
-      padding: 20px;
+      padding: clamp(6px, 1.5vh, 20px);
       width: 100%;
       max-width: 900px;
       box-shadow: 0 6px 12px rgba(0,0,0,0.1);
@@ -113,16 +120,16 @@
     }
 
     .wallet-title {
-      font-size: 1.3rem;
+      font-size: clamp(0.85rem, 2.5vh, 1.3rem);
       color: #2ed573;
       margin-top: 0;
-      margin-bottom: 15px;
+      margin-bottom: clamp(4px, 1vh, 15px);
       font-weight: bold;
     }
 
     .coins-pool {
       display: flex;
-      gap: 15px;
+      gap: clamp(6px, 1.5vw, 15px);
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
@@ -133,17 +140,17 @@
       cursor: grab;
       user-select: none;
       box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
-      touch-action: none; 
+      touch-action: none; /* Prevents the viewport from scrolling while dragging money */
       position: relative;
-      z-index: 999; /* Keeps the dragging item visually on top */
+      z-index: 10;
     }
 
-    .money-element img {
-      pointer-events: none; /* Stops internal images from messing up drag targets */
+    .money-element:active {
+      cursor: grabbing;
     }
 
     .img-note {
-      height: 65px;
+      height: clamp(36px, 8vh, 65px);
       border-radius: 4px;
       display: block;
     }
@@ -152,34 +159,76 @@
       border-radius: 50%;
       display: block;
     }
-    
-    .coin-10 img { width: 55px; height: 55px; }
-    .coin-5 img { width: 48px; height: 48px; }
+
+    .coin-10 img { width: clamp(32px, 7vh, 55px); height: clamp(32px, 7vh, 55px); }
+    .coin-5 img { width: clamp(28px, 6vh, 48px); height: clamp(28px, 6vh, 48px); }
 
     /* Status Text */
     #feedback {
-      margin-top: 20px;
-      font-size: 1.1rem;
+      margin: 0;
+      font-size: clamp(0.7rem, 2.2vh, 1.1rem);
       font-weight: bold;
-      min-height: 30px;
+      min-height: clamp(16px, 3vh, 30px);
       text-align: center;
     }
     .success { color: #2ed573; }
     .error { color: #ff4757; }
     .info { color: #3742fa; }
 
-    @media (max-width: 360px) {
-      .item-card { width: 125px; padding: 10px; }
-      .img-note { height: 55px; }
-      .coin-10 img { width: 48px; height: 48px; }
-      .coin-5 img { width: 42px; height: 42px; }
+    /* Landscape phones: side-by-side layout to avoid vertical overflow */
+    @media (max-height: 500px) and (orientation: landscape) {
+      body {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .header-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 0 0 auto;
+        max-width: 16vw;
+      }
+
+      h1 { font-size: clamp(0.75rem, 3.2vh, 1.1rem); }
+      p.instructions { display: none; }
+
+      .shop-container {
+        flex: 1 1 auto;
+        max-width: 55vw;
+        gap: 4px;
+      }
+
+      .item-card { width: clamp(58px, 10vw, 95px); }
+
+      .wallet-container {
+        flex: 0 0 auto;
+        max-width: 22vw;
+        padding: 4px 6px;
+      }
+
+      .coins-pool { gap: 4px; }
+
+      #feedback {
+        position: fixed;
+        bottom: 2px;
+        left: 0;
+        right: 0;
+        font-size: 0.6rem;
+        min-height: 14px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>හිතමිතුරු වෙළඳසැල 🛍️</h1>
-  <p class="instructions">ඔබේ පසුම්බියෙන් සල්ලි හෝ කාසි භාණ්ඩ මතට ඇදගෙන ගොස් දමන්න!</p>
+  <div class="header-group">
+    <h1>හිතමිතුරු වෙළඳසැල 🛍️</h1>
+    <p class="instructions">ඔබේ පසුම්බියෙන් සල්ලි හෝ කාසි භාණ්ඩ මතට ඇදගෙන ගොස් දමන්න!</p>
+  </div>
 
   <div class="shop-container">
     <div class="item-card" data-price="15">
@@ -290,7 +339,7 @@
         const touch = e.touches[0];
         startX = touch.clientX;
         startY = touch.clientY;
-        money.style.transition = 'none'; 
+        money.style.transition = 'none'; // Instant movement response
       }, { passive: true });
 
       money.addEventListener('touchmove', (e) => {
@@ -298,14 +347,14 @@
         const moveX = touch.clientX - startX;
         const moveY = touch.clientY - startY;
 
+        // Visual translation of note/coin tracking the finger position
         money.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
 
-        // Identify element directly beneath finger touch coordinate
+        // Identify the element directly under the user's touch target area
         const elementUnderFinger = document.elementFromPoint(touch.clientX, touch.clientY);
-        
-        // Safely trace up to look for the card element container
         const cardFound = elementUnderFinger ? elementUnderFinger.closest('.item-card') : null;
 
+        // Manage active mobile styling
         itemCards.forEach(c => c.classList.remove('hovered'));
         if (cardFound && !cardFound.style.opacity) {
           cardFound.classList.add('hovered');
@@ -316,7 +365,8 @@
       }, { passive: true });
 
       money.addEventListener('touchend', (e) => {
-        money.style.transition = 'transform 0.2s ease-out';
+        // Reset element position cleanly back into wallet
+        money.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         money.style.transform = 'none';
 
         if (targetCardMobile) {
@@ -330,7 +380,6 @@
 
     // --- 3. UNIFIED PAYMENT LOGIC ---
     function calculateTotal(card, amountPaid) {
-      // Find the inner drop-zone explicitly inside the passed card object
       const zone = card.querySelector('.drop-zone');
       const itemPrice = parseInt(card.dataset.price);
       let currentTotal = parseInt(zone.dataset.currentTotal);
